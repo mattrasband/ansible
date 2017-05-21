@@ -1,0 +1,7 @@
+---
+- name: install docker
+  apt:
+    pkg: docker.io
+- name: install docker-py
+  pip:
+    name: docker-py

@@ -1,0 +1,11 @@
+---
+- hosts: rasbandio
+  roles:
+    - nginx
+    - docker
+    - ssl
+- hosts: rockymountainpy
+  roles:
+    - nginx
+    - docker
+    - ssl

@@ -1,0 +1,4 @@
+---
+site_domain:
+server_port: 5000
+letsencrypt_email: "info@{{ site_domain }}"

@@ -1,0 +1,19 @@
+---
+# aptitude is currently required for many ansible tasks
+- name: install aptitutde
+  apt:
+    name: aptitude
+
+# Keep the system packages up to date, refresh daily
+- name: update system packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    upgrade: safe
+
+- name: enable ssh ufw
+  ufw:
+    rule: allow
+    name: OpenSSH
+  notify:
+    - enable ufw

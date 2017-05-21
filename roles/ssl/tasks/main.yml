@@ -1,0 +1,57 @@
+---
+- name: add certbot ppa
+  apt_repository:
+    repo: ppa:certbot/certbot
+- name: install certbot
+  apt:
+    pkg: certbot
+    state: latest
+
+# Generate a dhgroup for ssl, one is shared for all
+- name: check if dh group already generated
+  stat:
+    path: /etc/ssl/certs/dhparam.pem
+  register: dhparam
+- name: generate dh group
+  raw: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+  when: not dhparam.stat.exists
+
+# # generate the ssl certs
+- name: check if ssl certs already generated
+  stat:
+    path: /etc/letsencrypt/live/{{ site_domain }}/fullchain.pem
+  register: fullchain
+- name: stop nginx
+  service:
+    name: nginx.service
+    state: stopped
+  when: not fullchain.stat.exists
+- name: generate ssl certificates
+  raw: certbot certonly --standalone --email {{ letsencrypt_email }}
+       --agree-tos -n -d {{ site_domain }},www.{{ site_domain }}
+  when: not fullchain.stat.exists
+
+- name: make the domain {{ site_domain }} available
+  template:
+    src: site-available.j2
+    dest: /etc/nginx/sites-available/{{ site_domain }}
+
+- name: symlink the website to be enabled
+  file:
+    src: /etc/nginx/sites-available/{{ site_domain }}
+    dest: /etc/nginx/sites-enabled/{{ site_domain }}
+    state: link
+
+# Always ensure nginx is started, even if no domains changed
+- name: start nginx
+  service:
+    name: nginx.service
+    state: started
+
+- name: create a cron job to autorenew all ssl certificates
+  cron:
+    name: auto renew the ssl certificates
+    minute: 1
+    hour: 23
+    weekday: 0
+    job: '/usr/bin/certbot renew --quiet --renew-hook "/usr/sbin/service nginx reload"'
