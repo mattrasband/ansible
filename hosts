@@ -9,6 +9,7 @@ rockymountainpy.com
 
 [rockymountainpy:vars]
 site_domain = rockymountainpy.com
+server_port = 5000
 letsencrypt_email = matt.rasband@gmail.com
 
 [rasbandio]
@@ -17,4 +18,5 @@ rasband.io
 
 [rasbandio:vars]
 site_domain = rasband.io
+server_port = 5001
 letsencrypt_email = matt.rasband@gmail.com
