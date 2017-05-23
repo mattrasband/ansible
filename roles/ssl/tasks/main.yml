@@ -42,11 +42,11 @@
     dest: /etc/nginx/sites-enabled/{{ site_domain }}
     state: link
 
-# Always ensure nginx is started, even if no domains changed
-- name: start nginx
+# Always ensure nginx is reloaded, even if no domains changed
+- name: reload nginx
   service:
     name: nginx.service
-    state: started
+    state: reloaded
 
 - name: create a cron job to autorenew all ssl certificates
   cron:
