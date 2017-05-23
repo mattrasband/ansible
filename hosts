@@ -1,22 +1,8 @@
 [all:vars]
 ansible_python_interpreter = /usr/bin/python3
-ansible_user = root
-ansible_ssh_private_key_file = ~/.ssh/id_rsa
 
-[rockymountainpy]
-rockymountainpy.com
-# 138.68.247.132
+[webservers]
+138.68.247.132
 
-[rockymountainpy:vars]
-site_domain = rockymountainpy.com
-server_port = 5000
-letsencrypt_email = matt.rasband@gmail.com
-
-[rasbandio]
-rasband.io
-# 138.68.247.132
-
-[rasbandio:vars]
-site_domain = rasband.io
-server_port = 5001
+[webservers:vars]
 letsencrypt_email = matt.rasband@gmail.com

@@ -17,7 +17,7 @@
   when: not dhparam.stat.exists
 
 # # generate the ssl certs
-- name: check if ssl certs already generated
+- name: check if ssl certs for {{ site_domain }} are already generated
   stat:
     path: /etc/letsencrypt/live/{{ site_domain }}/fullchain.pem
   register: fullchain
@@ -26,17 +26,17 @@
     name: nginx.service
     state: stopped
   when: not fullchain.stat.exists
-- name: generate ssl certificates
+- name: generate ssl certificates for {{ site_domain }}
   raw: certbot certonly --standalone --email {{ letsencrypt_email }}
        --agree-tos -n -d {{ site_domain }},www.{{ site_domain }}
   when: not fullchain.stat.exists
 
 - name: make the domain {{ site_domain }} available
   template:
-    src: site-available.j2
+    src: etc/nginx/sites-available/site-available.j2
     dest: /etc/nginx/sites-available/{{ site_domain }}
 
-- name: symlink the website to be enabled
+- name: enable the domain {{ site_domain }}
   file:
     src: /etc/nginx/sites-available/{{ site_domain }}
     dest: /etc/nginx/sites-enabled/{{ site_domain }}

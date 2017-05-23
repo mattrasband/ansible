@@ -1,0 +1,17 @@
+---
+- name: install fail2ban
+  apt:
+    pkg: fail2ban
+    state: latest
+  notify:
+  - restart fail2ban
+
+- name: configure fail2ban
+  template:
+    src: "etc/fail2ban/{{ item }}.local.j2"
+    dest: "/etc/fail2ban/{{ item }}.local"
+  with_items:
+  - jail
+  - fail2ban
+  notify:
+  - restart fail2ban

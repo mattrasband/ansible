@@ -5,3 +5,11 @@
 - name: install docker-py
   pip:
     name: docker-py
+# This is mostly a nicety so the ubuntu user can run webapps without
+# needing any elevated permissions.
+- name: add docker role to ubuntu user
+  user:
+    name: ubuntu
+    groups:
+    - docker
+    append: yes

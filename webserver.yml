@@ -1,11 +1,8 @@
 ---
-- hosts: rasbandio
+- hosts: webservers
   roles:
     - nginx
     - docker
-    - ssl
-- hosts: rockymountainpy
-  roles:
-    - nginx
-    - docker
-    - ssl
+    - { role: ssl, site_domain: rasband.io, server_port: 5001 }
+    - { role: ssl, site_domain: rockymountainpy.com, server_port: 5000 }
+    - { role: ssl, site_domain: bootiful.io, server_port: 8080 }

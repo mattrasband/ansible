@@ -11,9 +11,40 @@
     cache_valid_time: 86400
     upgrade: safe
 
+- include: fail2ban.yml
+
 - name: enable ssh ufw
   ufw:
     rule: allow
     name: OpenSSH
   notify:
-    - enable ufw
+  - enable ufw
+
+- name: create user ubuntu
+  user:
+    name: ubuntu
+    groups:
+    - sudo
+    shell: /bin/bash
+    home: /home/ubuntu
+    append: yes
+    password: "{{ ubuntu_user_password | password_hash('sha512') }}"
+
+- name: add authorized keys for user
+  authorized_key:
+    key: "https://github.com/{{ item }}.keys"
+    user: ubuntu
+  with_items:
+  - mrasband
+
+- name: setup openssh options
+  copy:
+    src: etc/ssh/sshd_config
+    dest: /etc/ssh/sshd_config
+  register: sshd_config
+
+- name: reload openssh
+  service:
+    name: sshd
+    state: reloaded
+  when: sshd_config.changed
