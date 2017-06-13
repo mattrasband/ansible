@@ -1,0 +1,12 @@
+---
+- hosts: pythonremoteconf
+  vars:
+    site_domain: pythonremoteconf.com
+    branch_or_sha: master
+    repo: ssh://git@github.com/pythonremoteconf/pythonremoteconf.git
+  roles:
+  - role: svc_django
+    service_description: "pythonremoteconf server"
+    exec_start: "gunicorn --workers 4 --bind 0.0.0.0:8000 --log-syslog --log-level debug pythonremoteconf.wsgi:application"
+    service_environment:
+    - "SECRET_KEY={{ secret_key }}"

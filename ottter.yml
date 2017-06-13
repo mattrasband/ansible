@@ -1,0 +1,17 @@
+---
+- hosts: ottter
+  gather_facts: false
+  roles:
+  - nginx
+  - role: ssl
+    site_domain: staging.ottter.com
+    server_port: 8000
+    static_dir: /var/www/staging.ottter.com/collected-static
+  - role: svc_django
+    service_description: "Ottter staging server"
+    exec_start: "gunicorn --workers 4 --bind 0.0.0.0:8000 --log-syslog --log-syslog-prefix OTTTER-STAGE --log-level debug ottter.wsgi:application"
+    service_environment:
+    - "PY_ENV=staging"
+    - "SECRET_KEY={{ secret_key }}"
+    - "SENDGRID_USERNAME={{ sendgrid_username }}"
+    - "SENDGRID_PASSWORD={{ sendgrid_password }}"

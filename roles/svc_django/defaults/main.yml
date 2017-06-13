@@ -1,0 +1,5 @@
+---
+deploy_cert: ''
+site_domain: example.com
+branch_or_sha: master
+repo: ''

@@ -1,0 +1,17 @@
+[Unit]
+Description={{ service_description }}
+
+
+[Service]
+ExecStart=/var/www/{{ site_domain }}/.venv/bin/{{ exec_start }}
+WorkingDirectory=/var/www/{{ site_domain }}
+Type=simple
+Restart=always
+RestartSec=1
+{% for env in service_environment %}
+Environment={{ env }}
+{% endfor %}
+
+
+[Install]
+WantedBy=multi-user.target

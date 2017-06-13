@@ -2,6 +2,7 @@
 - name: add certbot ppa
   apt_repository:
     repo: ppa:certbot/certbot
+
 - name: install certbot
   apt:
     pkg: certbot
@@ -21,11 +22,13 @@
   stat:
     path: /etc/letsencrypt/live/{{ site_domain }}/fullchain.pem
   register: fullchain
+
 - name: stop nginx
   service:
     name: nginx.service
     state: stopped
   when: not fullchain.stat.exists
+
 - name: generate ssl certificates for {{ site_domain }}
   raw: certbot certonly --standalone --email {{ letsencrypt_email }}
        --agree-tos -n -d {{ site_domain }},www.{{ site_domain }}

@@ -1,0 +1,59 @@
+---
+- name: copy the deploy rsa cert
+  copy:
+    content: "{{ deploy_cert }}"
+    dest: "~/.ssh/id_rsa_{{ site_domain }}_deploy"
+    mode: 0600
+
+- name: clone source repository
+  git:
+    accept_hostkey: yes
+    dest: "/var/www/{{ site_domain }}"
+    repo: "{{ repo }}"
+    version: "{{ branch_or_sha }}"
+    force: yes
+    key_file: "~/.ssh/id_rsa_{{ site_domain }}_deploy"
+  register: repository_clone
+
+- name: install dependencies
+  pip:
+    chdir: "/var/www/{{ site_domain }}"
+    virtualenv: "/var/www/{{ site_domain }}/.venv"
+    virtualenv_python: python3.6
+    requirements: "/var/www/{{ site_domain }}/requirements.txt"
+    state: forcereinstall
+  when: repository_clone.changed
+
+- name: collect static
+  shell: .venv/bin/python manage.py collectstatic --no-input
+  args:
+    chdir: /var/www/{{ site_domain }}
+  when: repository_clone.changed
+
+- name: run migrations
+  shell: .venv/bin/python manage.py migrate
+  args:
+    chdir: /var/www/{{ site_domain }}
+  when: repository_clone.changed
+
+- name: install app service
+  template:
+    src: etc/systemd/system/service.j2
+    dest: "/etc/systemd/system/{{ site_domain }}.service"
+  register: installed_service
+
+- name: restart systemd daemon
+  systemd:
+    name: "{{ site_domain }}.service"
+    daemon_reload: yes
+  when: installed_service.changed
+
+- name: restart app service
+  service:
+    name: "{{ site_domain }}.service"
+    state: restarted
+
+- name: enable app service at boot
+  systemd:
+    name: "{{ site_domain }}.service"
+    enabled: yes

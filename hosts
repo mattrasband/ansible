@@ -1,8 +1,12 @@
 [all:vars]
 ansible_python_interpreter = /usr/bin/python3
+letsencrypt_email = matt.rasband@gmail.com
 
 [webservers]
 138.68.247.132
 
-[webservers:vars]
-letsencrypt_email = matt.rasband@gmail.com
+[ottter]
+138.68.247.132
+
+[pythonremoteconf]
+138.68.251.28

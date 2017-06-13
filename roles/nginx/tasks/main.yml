@@ -4,18 +4,18 @@
     name: nginx
     state: installed
   notify:
-    - start nginx
+  - start nginx
 
 - name: disable default site
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify:
-    - restart nginx
+  - restart nginx
 
 - name: enable nginx in ufw
   ufw:
     rule: allow
     name: 'Nginx Full'
   notify:
-    - enable ufw
+  - enable ufw
